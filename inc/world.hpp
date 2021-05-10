@@ -2,7 +2,6 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include<utility>
 #include<vector>
 #include"cell.hpp"
 
@@ -20,14 +19,21 @@ namespace gol
     class World
     {
     public:
-        World(int _width, int _height);
-        World(std::pair<int, int> _size);
-        std::pair<int, int> getSize();
-        Cell* getCell(int x, int y);
+        World(const int width, const int height);
+        World(const std::pair<int, int> _size);
+        int goTurn();
+        int getTurn();
+        int* getSize();
+        Cell* getCell(const int x, const int y);
+        WorldMap* _testGetMap();
 
     private:
-        std::pair<int, int> size;
-        WorldMap map;
+        int turn;
+        int size[2];
+        WorldMap map;  // map[y][x]
+        void updateAllMap();
+        void setMap();
+        void fillMap();
     };
 }
 

@@ -21,7 +21,7 @@ TARGET	:= gol
 
 # Set the compiling settings
 CC		:= g++
-C_FLAGS	:= -O2 -w -fmax-errors=3 -std=c++14
+C_FLAGS	:= -O2 -w -fmax-errors=3 -std=c++17 -pthread
 ifeq ($(TARGET_ENV), OJ)
 C_FLAGS += -DONLINE_JUDGE
 endif
