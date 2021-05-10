@@ -45,6 +45,11 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "thread": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "bit": "cpp",
+        "condition_variable": "cpp",
+        "future": "cpp",
+        "iostream": "cpp",
+        "mutex": "cpp"
     }
 }

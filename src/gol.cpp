@@ -2,6 +2,7 @@
 #include"cell.hpp"
 #include"world.hpp"
 #include"thread_pool.hpp"
+#include"screen.hpp"
 
 
 void _testPrintMap(gol::World* w);
@@ -9,12 +10,13 @@ void _testPrintMap(gol::World* w);
 
 int main()
 {
+    // 84 * 24
     // gol::World* w = new gol::World(2, 3);
     // std::pair<int, int> s = w->getSize();
     // s.first = 1;
     // printf("> %d\n", w->getSize().first);
 
-    gol::World* w = new gol::World(7, 7);
+    gol::World* w = new gol::World(20, 20);
     w->getCell(2, 1)->_testSetStatus(gol::CellStatus::LIVE, 0);
     w->getCell(3, 2)->_testSetStatus(gol::CellStatus::LIVE, 0);
     w->getCell(1, 3)->_testSetStatus(gol::CellStatus::LIVE, 0);
@@ -23,12 +25,19 @@ int main()
 
     _testPrintMap(w);
 
-    for(int i = 0; i < 30; i++)
+    // timer tmr;
+    // tmr.stop();
+    for(int i = 0; i < 10; i++)
     {
         w->goTurn();
 
         _testPrintMap(w);
     }
+    // tmr.stop();
+
+    // _testPrintMap(w);
+
+    // printf("> %d\n", tmr.ms());
 
     return 0;
 }

@@ -4,6 +4,10 @@
 
 namespace gol
 {
+    // Forward declarations
+    World* World::w;
+
+
     World::World(const int width, const int height)
     {
         turn = 0;
@@ -15,7 +19,10 @@ namespace gol
 
     int World::goTurn()
     {
-        updateAllMap();
+        // updateAllMap();
+        updateAllCells();
+        // updateAllCellsPar();
+        
 
         return ++turn;
     }
@@ -51,6 +58,46 @@ namespace gol
                 (*wms)[j]->interact(&map, size, j, i, turn);
             }
         }
+
+        return;
+    }
+
+    void World::updateAllCells()
+    {
+        for(int i = 0; i < size[0] * size[1]; i++)
+        {
+            updateACell(i);
+        }
+
+        return;
+    }
+
+    void World::updateAllCellsPar()
+    {
+        w = this;
+        // threadPool.parallelize_loop(0, size[0] * size[1] - 1, updateACellIStatic, 1);
+
+        return;
+    }
+
+    void World::updateACellIStatic(const int i)
+    {
+        int* size = w->size;
+        w->updateACell(i % size[1], i / size[1]);
+
+        return;
+    }
+
+    void World::updateACell(const int i)
+    {
+        updateACell(i % size[1], i / size[1]);
+
+        return;
+    }
+
+    void World::updateACell(const int x, const int y)
+    {
+        map[y][x]->interact(&map, size, x, y, turn);
 
         return;
     }

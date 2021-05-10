@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<thread>
 #include"cell.hpp"
 #include"world.hpp"
 
@@ -26,6 +27,7 @@ namespace gol
     CellStatus Cell::interact(const WorldMap* map, const int size[2],
         const int x, const int y, const int turn)
     {
+        std::this_thread::sleep_for(std::chrono::nanoseconds(1));
         int t = turn & 1;
         int t2 = t ^ 1;
         status[t2] = liveOrDie(checkEnv(map, size, x, y, t), t);

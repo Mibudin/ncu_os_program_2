@@ -4,6 +4,7 @@
 
 #include<vector>
 #include"cell.hpp"
+#include"thread_pool.hpp"
 
 
 namespace gol
@@ -28,10 +29,17 @@ namespace gol
         WorldMap* _testGetMap();
 
     private:
+        static World* w;
+        thread_pool threadPool;
         int turn;
         int size[2];
         WorldMap map;  // map[y][x]
         void updateAllMap();
+        void updateAllCells();
+        void updateAllCellsPar();
+        static void updateACellIStatic(const int i);
+        void updateACell(const int i);
+        void updateACell(const int x, const int y);
         void setMap();
         void fillMap();
     };
