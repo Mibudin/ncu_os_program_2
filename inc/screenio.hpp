@@ -2,6 +2,8 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
+#include<termios.h>
+
 
 /**
  * ANSI Escape Sequences
@@ -51,42 +53,33 @@
 #define SGR_NEGA SGR_ATTR(7)   // Swaps foreground and background colors
 #define SGR_POSI SGR_ATTR(27)  // Returns foreground adn background to normal
 
+// Other Tools
+#define ANSIES(s) {printf((s)); fflush(nullptr);}  // Shorter expression for print and flush
+
+/**
+ * Screen configuration
+ */
+#define SCREEN_WIDTH  84
+#define SCREEN_HEIGHT 24
+
 
 namespace gol
 {
-    #define sdfs 3
-    class e;
+    class ScreenIO
+    {
+    public:
+        void initTty();
+        void uninitTty();
+        void getTty();
+        void setTty();
+        // void setStdinEcho(const bool echo);
+
+    private:
+        termios tty;
+        termios otty;
+        void backupTty();
+        void restoreTty();
+    };
 }
-
-
-// Hide input echo
-
-// #include <termios.h>
-
-// ...
-
-// void HideStdinKeystrokes()
-// {
-//     termios tty;
-
-//     tcgetattr(STDIN_FILENO, &tty);
-
-//     /* we want to disable echo */
-//     tty.c_lflag &= ~ECHO;
-
-//     tcsetattr(STDIN_FILENO, TCSANOW, &tty);
-// }
-
-// void ShowStdinKeystrokes()
-// {
-//    termios tty;
-
-//     tcgetattr(STDIN_FILENO, &tty);
-
-//     /* we want to reenable echo */
-//     tty.c_lflag |= ECHO;
-
-//     tcsetattr(STDIN_FILENO, TCSANOW, &tty);
-// }
 
 #endif

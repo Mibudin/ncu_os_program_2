@@ -45,6 +45,7 @@ endif
 # Problrms about names of files
 ifeq ($(OS), Windows_NT)
 EXECUTABLE	:= $(TARGET).exe
+RM	:= del
 else
 EXECUTABLE	:= $(TARGET)
 endif
@@ -56,8 +57,15 @@ endif
 all: $(BIN_DIR)/$(EXECUTABLE)
 
 # Clean all the executable files
-clean:
+cleanbin:
 	$(RM) $(BIN_DIR)/$(EXECUTABLE)
+
+# Clean all the object files
+cleanobj:
+	$(RM) $(OBJS)
+
+# Clean all the gemerated files
+clean: cleanbin cleanobj
 
 # Compile all the specified files (if needed), and excute them.
 run: all
