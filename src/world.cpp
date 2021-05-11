@@ -1,5 +1,8 @@
+#include<stdio.h>
+#include<thread>
 #include"cell.hpp"
 #include"world.hpp"
+#include"screenio.hpp"
 
 
 namespace gol
@@ -22,8 +25,13 @@ namespace gol
         // updateAllMap();
         updateAllCells();
         // updateAllCellsPar();
-        
 
+        // return ++turn;
+        return turn + 1;
+    }
+
+    int World::nextTurn()
+    {
         return ++turn;
     }
 
@@ -121,6 +129,45 @@ namespace gol
                 (*wms)[j] = new Cell();
             }
         }
+
+        return;
+    }
+
+    bool World::needRender()
+    {
+        return true;
+    }
+
+    void World::render()
+    {
+        ANSIES(SCP CUP(3, 5));
+        
+        WorldMapStreet* wms;
+        for(int i = 0; i < size[1]; i++)
+        {
+            
+            WorldMapStreet* wms = &(map[i]);
+            for(int j = 0; j < size[0]; j++)
+            {
+                switch((*wms)[j]->getStatus()[turn & 1])
+                {
+                    case DEAD: printf(". "); break;
+                    case LIVE: printf("O "); break;
+                }
+            }
+            ANSIES("\n" CHA(5));
+        }
+
+        // WorldMapStreet* wms;
+        // for(int i = 0; i < size[1]; i++)
+        // {
+            
+        //     WorldMapStreet* wms = &(map[i]);
+        //     for(int j = 0; j < size[0]; j++)
+        //     {
+        //         (*wms)[j]->render(j, i, turn);
+        //     }
+        // }
 
         return;
     }

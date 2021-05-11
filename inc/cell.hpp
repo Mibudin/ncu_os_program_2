@@ -30,6 +30,7 @@ namespace gol
         CellStatus* getStatus();
         void _testSetStatus(CellStatus _status, const int t);
         CellStatus interact(const WorldMap* map, const int size[2], const int x, const int y, const int turn);
+        void render(const int x, const int y, const int turn);
 
     private:
         CellStatus status[2];

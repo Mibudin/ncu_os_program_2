@@ -2,6 +2,7 @@
 #include<thread>
 #include"cell.hpp"
 #include"world.hpp"
+#include"screenio.hpp"
 
 
 namespace gol
@@ -27,12 +28,25 @@ namespace gol
     CellStatus Cell::interact(const WorldMap* map, const int size[2],
         const int x, const int y, const int turn)
     {
-        std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+        // std::this_thread::sleep_for(std::chrono::nanoseconds(1));
         int t = turn & 1;
         int t2 = t ^ 1;
         status[t2] = liveOrDie(checkEnv(map, size, x, y, t), t);
 
         return status[t2];
+    }
+
+    void Cell::render(const int x, const int y, const int turn)
+    {
+        printf(CUP(%d, %d), y + 3, (x << 1) + 5);
+        switch(status[turn & 1])
+        {
+            case DEAD: printf(". "); break;
+            case LIVE: printf("O "); break;
+        }
+        fflush(nullptr);
+
+        return;
     }
 
     int Cell::checkEnv(const WorldMap* map, const int size[2],

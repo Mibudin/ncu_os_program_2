@@ -6,7 +6,7 @@
 
 namespace gol
 {
-    void ScreenIO::initTty()
+    void Screenio::initTty()
     {
         backupTty();
         fflush(nullptr);
@@ -18,11 +18,15 @@ namespace gol
         tty.c_lflag &= ~ECHO;
         setTty();
 
+        ANSIES(CUH ED(2) CUP(1,1));
+
         return;
     }
 
-    void ScreenIO::uninitTty()
+    void Screenio::uninitTty()
     {
+        ANSIES(CUS);
+
         fflush(nullptr);
         ANSIES(MSB);
 
@@ -31,21 +35,21 @@ namespace gol
         return;
     }
 
-    void ScreenIO::getTty()
+    void Screenio::getTty()
     {
         tcgetattr(STDIN_FILENO, &tty);
 
         return;
     }
 
-    void ScreenIO::setTty()
+    void Screenio::setTty()
     {
         tcsetattr(STDIN_FILENO, TCSANOW, &tty);
 
         return;
     }
 
-    // void ScreenIO::setStdinEcho(const bool echo)
+    // void Screenio::setStdinEcho(const bool echo)
     // {
     //     if(echo) tty.c_lflag &= ~ECHO;  // Disable
     //     else     tty.c_lflag |= ~ECHO;  // Enable
@@ -53,14 +57,14 @@ namespace gol
     //     return;
     // }
 
-    void ScreenIO::backupTty()
+    void Screenio::backupTty()
     {
         tcgetattr(STDIN_FILENO, &otty);
 
         return;
     }
 
-    void ScreenIO::restoreTty()
+    void Screenio::restoreTty()
     {
         tcsetattr(STDIN_FILENO, TCSANOW, &otty);
 

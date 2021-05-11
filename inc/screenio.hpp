@@ -1,6 +1,6 @@
 #pragma once
-#ifndef SCREEN_H
-#define SCREEN_H
+#ifndef SCREENIO_H
+#define SCREENIO_H
 
 #include<termios.h>
 
@@ -13,8 +13,12 @@
 // Escape Sequence
 #define ESC "\033"   // Escape Character
 #define BEL "\007"   // Bell
-#define CSI ESC "["  // Control Sequence Introducer
-#define OSC ESC "]"  // Operating System Command
+
+// Combined Commands
+#define CSI    ESC "["     // Control Sequence Introducer
+#define OSC    ESC "]"     // Operating System Command
+#define DEC(n) ESC "(" #n  // Designate Character Set (0: DEC Line Drawing, B: US ASCII)
+#define RIS    ESC "c"     // Reset to Initial State
 
 // Operating System Command
 #define SWT(s) OSC "2;" #s BEL  // Set Window Title
@@ -55,6 +59,7 @@
 
 // Other Tools
 #define ANSIES(s) {printf((s)); fflush(nullptr);}  // Shorter expression for print and flush
+// #define vCUP(n, m) {printf(CUP(%d, %d), n, m); fflush(nullptr);}
 
 /**
  * Screen configuration
@@ -65,7 +70,7 @@
 
 namespace gol
 {
-    class ScreenIO
+    class Screenio
     {
     public:
         void initTty();
