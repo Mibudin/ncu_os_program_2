@@ -74,7 +74,7 @@ namespace gol
     {
     public:
         void initTty();
-        void uninitTty();
+        void deinitTty();
         void getTty();
         void setTty();
 

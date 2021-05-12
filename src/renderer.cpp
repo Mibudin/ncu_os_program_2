@@ -2,6 +2,7 @@
 #include"renderer.hpp"
 #include"renderee.hpp"
 
+
 namespace gol
 {
     void Renderer::renderAll()
@@ -9,6 +10,16 @@ namespace gol
         for(IRenderee* ree : renderees)
         {
             if(ree->needRender()) ree->render();
+        }
+
+        return;
+    }
+
+    void Renderer::renderInit()
+    {
+        for(IRenderee* ree : renderees)
+        {
+            ree->renderInit();
         }
 
         return;

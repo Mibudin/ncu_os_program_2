@@ -18,7 +18,7 @@ namespace gol
         return status;
     }
 
-    void Cell::_testSetStatus(CellStatus _status, const int t)
+    void Cell::setStatus(CellStatus _status, const int t)
     {
         status[t] = _status;
 
@@ -37,7 +37,7 @@ namespace gol
 
     void Cell::render(const int x, const int y, const int turn)
     {
-        printf(CUP(%d, %d), y + 3, (x << 1) + 5);
+        printf(CUP(%d, %d), y + 3, (x << 1) + 5 + 1);
         switch(status[turn & 1])
         {
             case DEAD: printf(". "); break;

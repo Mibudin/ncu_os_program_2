@@ -7,10 +7,6 @@
 
 namespace gol
 {
-    // Forward declarations
-    World* World::w;
-
-
     World::World(const int width, const int height)
     {
         turn = 0;
@@ -20,13 +16,29 @@ namespace gol
         setMap();
     }
 
+    void World::deinit()
+    {
+        WorldMapStreet* wms;
+        for(int i = 0; i < size[1]; i++)
+        {
+            WorldMapStreet* wms = &(map[i]);
+            for(int j = 0; j < size[0]; j++)
+            {
+                free((*wms)[j]);
+            }
+        }
+
+        return;
+    }
+
     int World::goTurn()
     {
         // updateAllMap();
-        updateAllCells();
-        // updateAllCellsPar();
 
         // return ++turn;
+
+        updateAllCells();
+
         return turn + 1;
     }
 
@@ -50,9 +62,15 @@ namespace gol
         return map[y][x];
     }
 
-    WorldMap* World::_testGetMap()
+    void World::setSampleMap()
     {
-        return &map;
+        getCell(2, 1)->setStatus(gol::CellStatus::LIVE, 0);
+        getCell(3, 2)->setStatus(gol::CellStatus::LIVE, 0);
+        getCell(1, 3)->setStatus(gol::CellStatus::LIVE, 0);
+        getCell(2, 3)->setStatus(gol::CellStatus::LIVE, 0);
+        getCell(3, 3)->setStatus(gol::CellStatus::LIVE, 0);
+
+        return;
     }
 
     void World::updateAllMap()
@@ -76,22 +94,6 @@ namespace gol
         {
             updateACell(i);
         }
-
-        return;
-    }
-
-    void World::updateAllCellsPar()
-    {
-        w = this;
-        // threadPool.parallelize_loop(0, size[0] * size[1] - 1, updateACellIStatic, 1);
-
-        return;
-    }
-
-    void World::updateACellIStatic(const int i)
-    {
-        int* size = w->size;
-        w->updateACell(i % size[0], i / size[0]);
 
         return;
     }
@@ -140,7 +142,7 @@ namespace gol
 
     void World::render()
     {
-        ANSIES(SCP CUP(3, 5));
+        // ANSIES(SCP CUP(3, 5));
 
         WorldMapStreet* wms;
         for(int i = 0; i < size[1]; i++)
@@ -148,25 +150,50 @@ namespace gol
             WorldMapStreet* wms = &(map[i]);
             for(int j = 0; j < size[0]; j++)
             {
-                switch((*wms)[j]->getStatus()[turn & 1])
-                {
-                    case DEAD: printf(". "); break;
-                    case LIVE: printf("O "); break;
-                }
+                // switch((*wms)[j]->getStatus()[turn & 1])
+                // {
+                //     case DEAD: printf(". "); break;
+                //     case LIVE: printf("O "); break;
+                // }
+                (*wms)[j]->render(j, i, turn);
             }
-            ANSIES("\n" CHA(5));
+            // ANSIES("\n" CHA(5));
         }
 
-        // WorldMapStreet* wms;
-        // for(int i = 0; i < size[1]; i++)
-        // {
-            
-        //     WorldMapStreet* wms = &(map[i]);
-        //     for(int j = 0; j < size[0]; j++)
-        //     {
-        //         (*wms)[j]->render(j, i, turn);
-        //     }
-        // }
+        return;
+    }
+
+    void World::renderInit()
+    {
+        ANSIES(DEC(0) CUP(2, 4));
+        printf("l");
+        for(int i = 0; i < (size[0] << 1) + 1; i++)
+        {
+            printf("q");
+        }
+        printf("k");
+
+        ANSIES(CUP(23, 4));
+        printf("m");
+        for(int i = 0; i < (size[0] << 1) + 1; i++)
+        {
+            printf("q");
+        }
+        printf("j");
+
+        ANSIES(CUP(3, 4));
+        for(int i = 0; i < size[1]; i++)
+        {
+            printf("x" CUB(1) CUD(1));
+        }
+
+        printf(CUP(3, %d), 4 + (size[0] << 1) + 2);
+        for(int i = 0; i < size[1]; i++)
+        {
+            printf("x" CUB(1) CUD(1));
+        }
+
+        ANSIES(DEC(B));
 
         return;
     }

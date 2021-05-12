@@ -28,7 +28,7 @@ namespace gol
         return;
     }
 
-    void Screenio::uninitTty()
+    void Screenio::deinitTty()
     {
         ANSIES(CUS);
 

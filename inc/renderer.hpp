@@ -15,6 +15,7 @@ namespace gol
     {
     public:
         void renderAll();
+        void renderInit();
         void addRenderee(IRenderee* renderee);
 
     private:

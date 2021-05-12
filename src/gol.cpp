@@ -13,8 +13,20 @@
 /**
  * Configurations
  */
-#define WORLD_WIDTH  38
-#define WORLD_HEIGHT 20
+
+#define SCREEN_WIDTH    84
+#define SCREEN_HEIGHT   24
+
+#define WORLD_WIDTH     38
+#define WORLD_HEIGHT    20
+
+#define TURN_PERIOD    100
+#define TURN_MAX      1000
+
+
+void init();
+void loop();
+void deinit();
 
 
 gol::World*    w;
@@ -22,74 +34,25 @@ gol::Screenio* sio;
 gol::Keyio*    kio;
 gol::Renderer* rer;
 
+std::thread* thW;
+std::thread* thR;
+std::thread* thK;
 
-void init();
+std::chrono::steady_clock::duration dur;
+std::chrono::steady_clock::time_point tp;
 
+timer tmr;
 
 
 int main()
 {
     init();
-
-    w->getCell(2, 1)->_testSetStatus(gol::CellStatus::LIVE, 0);
-    w->getCell(3, 2)->_testSetStatus(gol::CellStatus::LIVE, 0);
-    w->getCell(1, 3)->_testSetStatus(gol::CellStatus::LIVE, 0);
-    w->getCell(2, 3)->_testSetStatus(gol::CellStatus::LIVE, 0);
-    w->getCell(3, 3)->_testSetStatus(gol::CellStatus::LIVE, 0);
-
-    sio->initTty();
-    // std::this_thread::sleep_for(std::chrono::nanoseconds(5));
-
-    rer->addRenderee(w);
-
-    kio->startWait();
-
-    std::thread* thW;
-    std::thread* thR;
-    std::thread* thK;
-
-    std::chrono::steady_clock::duration dur = std::chrono::milliseconds(100);
-    std::chrono::steady_clock::time_point tp;
-
-    timer tmr;
+    
     tmr.start();
-
-
-    for(int i = 0; i < 1000; i++)
-    {
-        tp = std::chrono::steady_clock::now() + dur;
-
-        thW = new std::thread(&gol::World::goTurn, w);
-        thR = new std::thread(&gol::Renderer::renderAll, rer);
-
-        if(kio->waitKeyAsync(tp))
-        {
-            bool nextWait = true;
-            switch(kio->getLastKey())
-            {
-                case 'P': case 'p':
-                    
-                    break;
-
-                case -1:
-                default:
-                    break;
-            }
-            if(nextWait) kio->startWait();
-        }
-
-        thW->join();  // Process turn i + 1 complete
-        thR->join();  // Render turn i complete
-
-        free(thW);
-        free(thR);
-
-        w->nextTurn();
-    }
-
+    loop();
     tmr.stop();
 
-    sio->uninitTty();
+    deinit();
 
     printf("> %d\n", tmr.ms());
 
@@ -102,4 +65,77 @@ void init()
     sio = new gol::Screenio();
     kio = new gol::Keyio();
     rer = new gol::Renderer();
+
+    dur = std::chrono::milliseconds(TURN_PERIOD);
+
+    w->setSampleMap();
+
+    sio->initTty();
+
+    rer->addRenderee(w);
+
+    rer->renderInit();
+
+    return;
+}
+
+void loop()
+{
+    bool contLoop = true;
+
+    kio->startWait();
+
+    for(int i = 0; contLoop && i < TURN_MAX; i++)
+    {
+        tp = std::chrono::steady_clock::now() + dur;
+
+        thW = new std::thread(&gol::World::goTurn, w);
+        thR = new std::thread(&gol::Renderer::renderAll, rer);
+
+        if(kio->waitKeyAsync(tp))
+        {
+            bool nextWait = true;
+            switch(kio->getLastKey())
+            {
+                case 'P': case 'p':
+                    nextWait = false;
+                    contLoop = false;
+                    break;
+
+                case -1: default:
+                    break;
+            }
+            if(nextWait) kio->startWait();
+        }
+
+        thW->join();  // Process turn i + 1 complete
+        thR->join();  // Render turn i complete
+
+        free(thW); thW = nullptr;
+        free(thR); thR = nullptr;
+
+        std::this_thread::sleep_until(tp);
+
+        // Enter other mode?
+
+        w->nextTurn();
+    }
+
+    return;
+}
+
+void deinit()
+{
+    w->deinit();
+    sio->deinitTty();
+
+    free(w);
+    free(sio);
+    free(kio);
+    free(rer);
+
+    if(thW != nullptr) free(thW);
+    if(thR != nullptr) free(thR);
+
+    return;
 }
