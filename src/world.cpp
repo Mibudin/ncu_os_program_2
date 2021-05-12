@@ -91,14 +91,14 @@ namespace gol
     void World::updateACellIStatic(const int i)
     {
         int* size = w->size;
-        w->updateACell(i % size[1], i / size[1]);
+        w->updateACell(i % size[0], i / size[0]);
 
         return;
     }
 
     void World::updateACell(const int i)
     {
-        updateACell(i % size[1], i / size[1]);
+        updateACell(i % size[0], i / size[0]);
 
         return;
     }
@@ -141,11 +141,10 @@ namespace gol
     void World::render()
     {
         ANSIES(SCP CUP(3, 5));
-        
+
         WorldMapStreet* wms;
         for(int i = 0; i < size[1]; i++)
         {
-            
             WorldMapStreet* wms = &(map[i]);
             for(int j = 0; j < size[0]; j++)
             {

@@ -64,8 +64,8 @@
 /**
  * Screen configuration
  */
-#define SCREEN_WIDTH  84
-#define SCREEN_HEIGHT 24
+// #define SCREEN_WIDTH  84
+// #define SCREEN_HEIGHT 24
 
 
 namespace gol
@@ -77,11 +77,10 @@ namespace gol
         void uninitTty();
         void getTty();
         void setTty();
-        // void setStdinEcho(const bool echo);
 
     private:
-        termios tty;
-        termios otty;
+        termios tty[3];
+        termios otty[3];
         void backupTty();
         void restoreTty();
     };

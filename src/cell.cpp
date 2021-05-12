@@ -28,7 +28,6 @@ namespace gol
     CellStatus Cell::interact(const WorldMap* map, const int size[2],
         const int x, const int y, const int turn)
     {
-        // std::this_thread::sleep_for(std::chrono::nanoseconds(1));
         int t = turn & 1;
         int t2 = t ^ 1;
         status[t2] = liveOrDie(checkEnv(map, size, x, y, t), t);
@@ -56,8 +55,8 @@ namespace gol
         int p, q;
         for(int i = 0; i < 8; i++)
         {
-            p = x + neighbors[i][1];
-            q = y + neighbors[i][0];
+            p = x + neighbors[i][0];
+            q = y + neighbors[i][1];
 
                  if(p < 0)        p += size[0];
             else if(p >= size[0]) p -= size[0];

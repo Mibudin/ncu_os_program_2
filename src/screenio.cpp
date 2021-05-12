@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<unistd.h>
 #include<termios.h>
+#include<thread>
 #include"screenio.hpp"
 
 
@@ -13,9 +14,13 @@ namespace gol
 
         ANSIES(ASB);
 
+        // tty.c_lflag |= ~ECHO;  // Enable
+        // tty.c_lflag &= ~ECHO;  // Disable
+
         getTty();
-        tty.c_lflag &= ~ICANON;
-        tty.c_lflag &= ~ECHO;
+        tty[STDIN_FILENO].c_lflag &= ~ICANON;
+        tty[STDIN_FILENO].c_lflag &= ~ECHO;
+        // cfmakeraw(&(tty[STDIN_FILENO]));
         setTty();
 
         ANSIES(CUH ED(2) CUP(1,1));
@@ -37,36 +42,48 @@ namespace gol
 
     void Screenio::getTty()
     {
-        tcgetattr(STDIN_FILENO, &tty);
+        // WHY CAN'T?
+        // for(int i = 0; i < 1; i++)
+        // {
+        //     tcgetattr(i, &tty[i]);
+        // }
+        tcgetattr(STDIN_FILENO, &tty[STDIN_FILENO]);
 
         return;
     }
 
     void Screenio::setTty()
     {
-        tcsetattr(STDIN_FILENO, TCSANOW, &tty);
+        // WHY CAN'T?
+        // for(int i = 0; i < 3; i++)
+        // {
+        //     tcsetattr(i, TCSANOW, &tty[i]);
+        // }
+        tcsetattr(STDIN_FILENO, TCSANOW, &tty[STDIN_FILENO]);
 
         return;
     }
 
-    // void Screenio::setStdinEcho(const bool echo)
-    // {
-    //     if(echo) tty.c_lflag &= ~ECHO;  // Disable
-    //     else     tty.c_lflag |= ~ECHO;  // Enable
-
-    //     return;
-    // }
-
     void Screenio::backupTty()
     {
-        tcgetattr(STDIN_FILENO, &otty);
+        // WHY CAN'T?
+        // for(int i = 0; i < 3; i++)
+        // {
+        //     tcgetattr(i, &otty[i]);
+        // }
+        tcgetattr(STDIN_FILENO, &otty[STDIN_FILENO]);
 
         return;
     }
 
     void Screenio::restoreTty()
     {
-        tcsetattr(STDIN_FILENO, TCSANOW, &otty);
+        // WHY CAN'T?
+        // for(int i = 0; i < 3; i++)
+        // {
+        //     tcsetattr(i, TCSANOW, &otty[i]);
+        // }
+        tcsetattr(STDIN_FILENO, TCSANOW, &otty[STDIN_FILENO]);
 
         return;
     }

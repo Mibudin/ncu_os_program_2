@@ -36,7 +36,6 @@ namespace gol
 
     private:
         static World* w;
-        thread_pool threadPool;
         int turn;
         int size[2];
         WorldMap map;  // map[y][x]

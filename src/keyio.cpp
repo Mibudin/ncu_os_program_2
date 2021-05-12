@@ -1,40 +1,63 @@
+#include<stdio.h>
+#include<unistd.h>
 #include<iostream>
 #include<limits>
-#include<stdio.h>
+#include<future>
+#include<termios.h>
 #include"keyio.hpp"
 
 
 namespace gol
 {
-    int Keyio::blockWaitKey()
+    void Keyio::startWait()
     {
-        // std::cin.sync();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max());
-        return (lastKey = getchar());
-    }
-
-    void Keyio::blockWaitKey(int key)
-    {
-        // std::cin.sync();
-        // std::cin;
-        printf("> %d", key);
-        // std::cin.ignore(std::numeric_limits<std::streamsize>::max());
-        std::cin.sync();
-        printf("> %d", key);
-        // while(getchar() != key);
-        char c;
-        while(true)
-        {
-            std::cin.read(&c, 1);
-            printf("%d ", c);
-            if(c == key) break;
-        };
+        kin = std::async(std::launch::async, &gol::Keyio::blockWaitKey, this);
 
         return;
+    }
+
+    bool Keyio::waitKeyAsync(const std::chrono::steady_clock::time_point time)
+    {
+        bool ready = kin.wait_until(time) == std::future_status::ready;
+        if(ready) lastKey = kin.get();
+
+        return ready;
     }
 
     int Keyio::getLastKey()
     {
         return lastKey;
+    }
+
+    int Keyio::blockWaitKey()
+    {
+        // std::cin.sync();
+        // // std::cin.ignore(std::numeric_limits<std::streamsize>::max());
+        // return (lastKey = getchar());
+
+        while(!kbhit());
+
+        return getch();
+    }
+
+    int Keyio::kbhit()
+    {
+        struct timeval tv = {0L, 1L};
+        fd_set fds;
+        FD_ZERO(&fds);
+        FD_SET(STDIN_FILENO, &fds);
+
+        return select(1, &fds, NULL, NULL, &tv);
+    }
+
+    int Keyio::getch()
+    {
+        int r;
+        unsigned char c;
+
+        r = read(STDIN_FILENO, &c, sizeof(c));
+
+        if(r < 0) return r;
+        else      return c;
     }
 }
