@@ -3,7 +3,7 @@
 #include<thread>
 #include"cell.hpp"
 #include"world.hpp"
-#include"thread_pool.hpp"
+// #include"thread_pool.hpp"
 #include"screenio.hpp"
 #include"keyio.hpp"
 #include"renderer.hpp"
@@ -20,12 +20,12 @@
 #define WORLD_WIDTH     38
 #define WORLD_HEIGHT    20
 
-#define TURN_PERIOD    100
+#define TURN_PERIOD    200
 #define TURN_MAX      1000
 
 
 void init();
-void setMap();
+void setMap(const int turn);
 void loop();
 void deinit();
 
@@ -42,22 +42,22 @@ std::thread* thK;
 std::chrono::steady_clock::duration dur;
 std::chrono::steady_clock::time_point tp;
 
-timer tmr;
+// timer tmr;
 
 
 int main()
 {
     init();
 
-    setMap();
+    setMap(0);
     
-    tmr.start();
+    // tmr.start();
     loop();
-    tmr.stop();
+    // tmr.stop();
 
     deinit();
 
-    printf("> %d\n", tmr.ms());
+    // printf("> %d\n", tmr.ms());
 
     return 0;
 }
@@ -82,14 +82,16 @@ void init()
     return;
 }
 
-void setMap()
+void setMap(const int turn)
 {
     rer->renderAll();
 
     bool nextWait = true;
     bool rerender = false;
+    bool goDeinit = false;
     char c;
     int x = 0, y = 0;
+    int t = turn & 1;
 
     ANSIES(CUP(3, 6) CUS);
 
@@ -114,17 +116,22 @@ void setMap()
                 break;
 
             case '[':
-                w->getCell(x, y)->setStatus(gol::CellStatus::DEAD, 0);
+                w->getCell(x, y)->setStatus(gol::CellStatus::DEAD, t);
                 rerender = true;
                 break;
 
             case ']':
-                w->getCell(x, y)->setStatus(gol::CellStatus::LIVE, 0);
+                w->getCell(x, y)->setStatus(gol::CellStatus::LIVE, t);
                 rerender = true;
                 break;
 
+            case '\\':
+                nextWait = false;
+                break;
+            
             case 'P': case 'p':
                 nextWait = false;
+                goDeinit = true;
                 break;
 
             case -1: default:
@@ -143,12 +150,16 @@ void setMap()
 
     ANSIES(CUH);
 
+    if(goDeinit) deinit();
+
     return;
 }
 
 void loop()
 {
     bool contLoop = true;
+    bool backSet = false;
+    bool goDeinit = false;
 
     kio->startWait();
 
@@ -164,7 +175,13 @@ void loop()
             bool nextWait = true;
             switch(kio->getLastKey())
             {
+                case '\\':
+                    backSet = true;
+                    nextWait = false;
+                    break;
+
                 case 'P': case 'p':
+                    goDeinit = true;
                     nextWait = false;
                     contLoop = false;
                     break;
@@ -184,9 +201,19 @@ void loop()
         std::this_thread::sleep_until(tp);
 
         // Enter other mode?
+        if(backSet)
+        {
+            backSet = false;
+            setMap(w->getTurn());
+            w->backTurn();
+
+            kio->startWait();
+        }
 
         w->nextTurn();
     }
+
+    if(goDeinit) deinit();
 
     return;
 }
@@ -204,5 +231,6 @@ void deinit()
     if(thW != nullptr) free(thW);
     if(thR != nullptr) free(thR);
 
+    exit(0);
     return;
 }

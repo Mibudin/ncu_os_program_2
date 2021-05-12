@@ -47,6 +47,11 @@ namespace gol
         return ++turn;
     }
 
+    int World::backTurn()
+    {
+        return --turn;
+    }
+
     int World::getTurn()
     {
         return turn;

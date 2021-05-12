@@ -25,6 +25,7 @@ namespace gol
         void deinit();
         int goTurn();
         int nextTurn();
+        int backTurn();
         int getTurn();
         int* getSize();
         Cell* getCell(const int x, const int y);
