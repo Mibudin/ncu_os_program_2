@@ -20,6 +20,8 @@ namespace gol
         getTty();
         tty[STDIN_FILENO].c_lflag &= ~ICANON;
         tty[STDIN_FILENO].c_lflag &= ~ECHO;
+        tty[STDIN_FILENO].c_cc[VMIN] = 0;
+        tty[STDIN_FILENO].c_cc[VTIME] = 0;
         // cfmakeraw(&(tty[STDIN_FILENO]));
         setTty();
 

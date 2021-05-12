@@ -25,6 +25,7 @@
 
 
 void init();
+void setMap();
 void loop();
 void deinit();
 
@@ -47,6 +48,8 @@ timer tmr;
 int main()
 {
     init();
+
+    setMap();
     
     tmr.start();
     loop();
@@ -75,6 +78,70 @@ void init()
     rer->addRenderee(w);
 
     rer->renderInit();
+
+    return;
+}
+
+void setMap()
+{
+    rer->renderAll();
+
+    bool nextWait = true;
+    bool rerender = false;
+    char c;
+    int x = 0, y = 0;
+
+    ANSIES(CUP(3, 6) CUS);
+
+    while(nextWait && kio->blockWaitKey())
+    {
+        switch(c = kio->getLastKey())
+        {
+            case 'W': case 'w':
+                if(y > 0){ANSIES(CUU(1)); y--;}
+                break;
+            
+            case 'S': case 's':
+                if(y < WORLD_HEIGHT - 1){ANSIES(CUD(1)); y++;}
+                break;
+
+            case 'A': case 'a':
+                if(x > 0){ANSIES(CUB(2)); x--;}
+                break;
+
+            case 'D': case 'd':
+                if(x < WORLD_WIDTH - 1){ANSIES(CUF(2)); x++;}
+                break;
+
+            case '[':
+                w->getCell(x, y)->setStatus(gol::CellStatus::DEAD, 0);
+                rerender = true;
+                break;
+
+            case ']':
+                w->getCell(x, y)->setStatus(gol::CellStatus::LIVE, 0);
+                rerender = true;
+                break;
+
+            case 'P': case 'p':
+                nextWait = false;
+                break;
+
+            case -1: default:
+                // printf("> %d\n", c);
+                break;
+        }
+
+        if(rerender)
+        {
+            ANSIES(CUH SCP);
+            rer->renderAll();
+            rerender = false;
+            ANSIES(RCP CUS);
+        }
+    }
+
+    ANSIES(CUH);
 
     return;
 }

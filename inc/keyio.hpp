@@ -20,6 +20,7 @@ namespace gol
 
     private:
         std::future<int> kin;
+        int oin;
         int lastKey;
         int kbhit();
         int getch();

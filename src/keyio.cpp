@@ -19,7 +19,7 @@ namespace gol
     bool Keyio::waitKeyAsync(const std::chrono::steady_clock::time_point time)
     {
         bool ready = kin.wait_until(time) == std::future_status::ready;
-        if(ready) lastKey = kin.get();
+        // if(ready) lastKey = kin.get();
 
         return ready;
     }
@@ -32,17 +32,22 @@ namespace gol
     int Keyio::blockWaitKey()
     {
         // std::cin.sync();
-        // // std::cin.ignore(std::numeric_limits<std::streamsize>::max());
+        // fflush(stdin);
+        // std::cin.ignorse(std::numeric_limits<std::streamsize>::max());
         // return (lastKey = getchar());
+
+        tcflush(0, TCIFLUSH);
 
         while(!kbhit());
 
-        return getch();
+        lastKey = getch();
+
+        return lastKey;
     }
 
     int Keyio::kbhit()
     {
-        struct timeval tv = {0L, 1L};
+        struct timeval tv = {0L, 0L};
         fd_set fds;
         FD_ZERO(&fds);
         FD_SET(STDIN_FILENO, &fds);
