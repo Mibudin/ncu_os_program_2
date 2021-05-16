@@ -13,7 +13,7 @@
 #define WORLD_HEIGHT  20
 
 #define TURN_PERIOD   200
-#define TURN_MAX      1000
+#define TURN_MAX      10000
 
 
 namespace gol

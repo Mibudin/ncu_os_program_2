@@ -13,16 +13,23 @@ namespace gol
         TOP, MID, BUT
     };
 
+    enum ModeType : int
+    {
+        SET, RUN
+    };
+
 
     class Textarea : public IRenderee
     {
     public:
-        Textarea(World* w);
+        Textarea(World* wld);
+        void setMode(const ModeType mode);
 
     private:
-        World* w;
+        World* wld;
         int start;
         int width;
+        ModeType mode;
         void renderSpace(const int y);
         void renderBar(const int y, const BarType type);
         bool needRender();

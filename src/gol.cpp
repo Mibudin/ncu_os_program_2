@@ -18,8 +18,8 @@ void loop();
 void deinit();
 
 
-gol::World*    w;
-gol::Textarea* t;
+gol::World*    wld;
+gol::Textarea* tta;
 gol::Screenio* sio;
 gol::Keyio*    kio;
 gol::Renderer* rer;
@@ -53,23 +53,22 @@ int main()
 
 void init()
 {
-    w   = new gol::World(WORLD_WIDTH, WORLD_HEIGHT);
-    t   = new gol::Textarea(w);
+    wld = new gol::World(WORLD_WIDTH, WORLD_HEIGHT);
+    tta = new gol::Textarea(wld);
     sio = new gol::Screenio();
     kio = new gol::Keyio();
     rer = new gol::Renderer();
 
     dur = std::chrono::milliseconds(gol::turnPeriod);
 
-    w->setSampleMap();
+    wld->setSampleMap();
 
     sio->initTty();
 
-    rer->addRenderee(w);
-    rer->addRenderee(t);
+    rer->addRenderee(wld);
+    rer->addRenderee(tta);
 
     rer->renderInit();
-    rer->renderAll();
 
     return;
 }
@@ -83,6 +82,10 @@ void setMap(const int turn)
     char c;
     int x = 0, y = 0;
     int t = turn & 1;
+
+    tta->setMode(gol::ModeType::SET);
+
+    rer->renderAll();
 
     ANSIES(CUP(3, 6) CUS);
 
@@ -107,14 +110,26 @@ void setMap(const int turn)
                 break;
 
             case '[':
-                w->getCell(x, y)->setStatus(gol::CellStatus::DEAD, t);
+                wld->getCell(x, y)->setStatus(gol::CellStatus::DEAD, t);
                 reCount = true;
                 reRender = true;
                 break;
 
             case ']':
-                w->getCell(x, y)->setStatus(gol::CellStatus::LIVE, t);
+                wld->getCell(x, y)->setStatus(gol::CellStatus::LIVE, t);
                 reCount = true;
+                reRender = true;
+                break;
+            
+            case ';':
+                if(gol::turnPeriod > 50) gol::turnPeriod -= 50;
+                dur = std::chrono::milliseconds(gol::turnPeriod);
+                reRender = true;
+                break;
+
+            case '\'':
+                if(gol::turnPeriod < 1000) gol::turnPeriod += 50;
+                dur = std::chrono::milliseconds(gol::turnPeriod);
                 reRender = true;
                 break;
 
@@ -134,7 +149,7 @@ void setMap(const int turn)
 
         if(reCount)
         {
-            w->countAllCells(t);
+            wld->countAllCells(t);
             reCount = false;
         }
 
@@ -160,13 +175,15 @@ void loop()
     bool backSet = false;
     bool goDeinit = false;
 
+    tta->setMode(gol::ModeType::RUN);
+
     kio->startWait();
 
     for(int i = 0; contLoop && i < TURN_MAX; i++)
     {
         tp = std::chrono::steady_clock::now() + dur;
 
-        thW = new std::thread(&gol::World::goTurn, w);
+        thW = new std::thread(&gol::World::goTurn, wld);
         thR = new std::thread(&gol::Renderer::renderAll, rer);
 
         if(kio->waitKeyAsync(tp))
@@ -174,6 +191,16 @@ void loop()
             bool nextWait = true;
             switch(kio->getLastKey())
             {
+                case ';':
+                    if(gol::turnPeriod > 50) gol::turnPeriod -= 50;
+                    dur = std::chrono::milliseconds(gol::turnPeriod);
+                    break;
+
+                case '\'':
+                    if(gol::turnPeriod < 1000) gol::turnPeriod += 50;
+                    dur = std::chrono::milliseconds(gol::turnPeriod);
+                    break;
+
                 case '\\':
                     backSet = true;
                     nextWait = false;
@@ -203,13 +230,14 @@ void loop()
         if(backSet)
         {
             backSet = false;
-            setMap(w->getTurn());
-            w->backTurn();
+            setMap(wld->getTurn());
+            tta->setMode(gol::ModeType::RUN);
+            wld->backTurn();
 
             kio->startWait();
         }
 
-        w->nextTurn();
+        wld->nextTurn();
     }
 
     if(goDeinit) deinit();
@@ -219,10 +247,10 @@ void loop()
 
 void deinit()
 {
-    w->deinit();
+    wld->deinit();
     sio->deinitTty();
 
-    free(w);
+    free(wld);
     free(sio);
     free(kio);
     free(rer);
