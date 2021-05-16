@@ -21,7 +21,7 @@
 #define RIS    ESC "c"     // Reset to Initial State
 
 // Operating System Command
-#define SWT(s) OSC "2;" #s BEL  // Set Window Title
+#define SWT(s) OSC "2;" s BEL  // Set Window Title
 
 // Control Sequence Introducer
 #define CUU(n)    CSI #n        "A"  // Cursor Up
@@ -34,7 +34,7 @@
 #define ED(n)     CSI #n        "J"  // Erase in Display (0: cursor to line end, 1: cursor to line start, 2: all screen)
 #define SGR(l)    CSI #l        "m"  // Select Graphic Rendition
 #define DSR       CSI          "6n"  // Device Status Report
-#define ECH(n)    CSI #n        "P"  // Erace Character
+#define ECH(n)    CSI #n        "X"  // Erace Character
 #define SCP       CSI           "s"  // Save Cursor Position
 #define RCP       CSI           "u"  // Restore Cursor Position
 
@@ -57,15 +57,22 @@
 #define SGR_NEGA SGR_ATTR(7)   // Swaps foreground and background colors
 #define SGR_POSI SGR_ATTR(27)  // Returns foreground adn background to normal
 
+// Designate Character Set
+#define DEC_VTHL "j"  // (0x6a) ┘
+#define DEC_VBHL "k"  // (0x6b) ┐
+#define DEC_VBHR "l"  // (0x6c) ┌
+#define DEC_VTHR "m"  // (0x6d) └
+#define DEC_VFHF "n"  // (0x6e) ┼
+#define DEC_VNHF "q"  // (0x71) ─
+#define DEC_VFHR "t"  // (0x74) ├
+#define DEC_VFHL "u"  // (0x75) ┤
+#define DEC_VTHF "v"  // (0x76) ┴
+#define DEC_VBHF "w"  // (0x77) ┬
+#define DEC_VFHN "x"  // (0x78) │	
+
 // Other Tools
 #define ANSIES(s) {printf((s)); fflush(nullptr);}  // Shorter expression for print and flush
 // #define vCUP(n, m) {printf(CUP(%d, %d), n, m); fflush(nullptr);}
-
-/**
- * Screen configuration
- */
-// #define SCREEN_WIDTH  84
-// #define SCREEN_HEIGHT 24
 
 
 namespace gol

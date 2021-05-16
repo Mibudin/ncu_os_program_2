@@ -12,6 +12,8 @@ namespace gol
         turn = 0;
         size[0] = width;
         size[1] = height;
+        liveCount[0] = 0;
+        liveCount[1] = 0;
 
         setMap();
     }
@@ -39,6 +41,8 @@ namespace gol
 
         updateAllCells();
 
+        countAllCells((turn & 1) ^ 1);
+
         return turn + 1;
     }
 
@@ -62,6 +66,11 @@ namespace gol
         return size;
     }
 
+    int World::getLiveCount()
+    {
+        return liveCount[turn & 1];
+    }
+
     Cell* World::getCell(const int x, const int y)
     {
         return map[y][x];
@@ -74,6 +83,28 @@ namespace gol
         getCell(1, 3)->setStatus(gol::CellStatus::LIVE, 0);
         getCell(2, 3)->setStatus(gol::CellStatus::LIVE, 0);
         getCell(3, 3)->setStatus(gol::CellStatus::LIVE, 0);
+
+        countAllCells(turn & 1);
+
+        return;
+    }
+
+    void World::countAllCells(const int t)
+    {
+        // int t = turn & 1;
+        // int t2 = t ^ 1;
+
+        liveCount[t] = 0;
+
+        WorldMapStreet* wms;
+        for(int i = 0; i < size[1]; i++)
+        {
+            WorldMapStreet* wms = &(map[i]);
+            for(int j = 0; j < size[0]; j++)
+            {
+                if((*wms)[j]->getStatus()[t] == LIVE) liveCount[t]++;
+            }
+        }
 
         return;
     }
@@ -171,31 +202,31 @@ namespace gol
     void World::renderInit()
     {
         ANSIES(DEC(0) CUP(2, 4));
-        printf("l");
+        printf(DEC_VBHR);
         for(int i = 0; i < (size[0] << 1) + 1; i++)
         {
-            printf("q");
+            printf(DEC_VNHF);
         }
-        printf("k");
+        printf(DEC_VBHL);
 
         ANSIES(CUP(23, 4));
-        printf("m");
+        printf(DEC_VTHR);
         for(int i = 0; i < (size[0] << 1) + 1; i++)
         {
-            printf("q");
+            printf(DEC_VNHF);
         }
-        printf("j");
+        printf(DEC_VTHL);
 
         ANSIES(CUP(3, 4));
         for(int i = 0; i < size[1]; i++)
         {
-            printf("x" CUB(1) CUD(1));
+            printf(DEC_VFHN CUB(1) CUD(1));
         }
 
         printf(CUP(3, %d), 4 + (size[0] << 1) + 2);
         for(int i = 0; i < size[1]; i++)
         {
-            printf("x" CUB(1) CUD(1));
+            printf(DEC_VFHN CUB(1) CUD(1));
         }
 
         ANSIES(DEC(B));

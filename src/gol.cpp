@@ -1,27 +1,15 @@
 #include<stdio.h>
 #include<unistd.h>
 #include<thread>
+#include"config.hpp"
 #include"cell.hpp"
 #include"world.hpp"
+#include"textarea.hpp"
 // #include"thread_pool.hpp"
 #include"screenio.hpp"
 #include"keyio.hpp"
 #include"renderer.hpp"
 #include"renderee.hpp"
-
-
-/**
- * Configurations
- */
-
-#define SCREEN_WIDTH    84
-#define SCREEN_HEIGHT   24
-
-#define WORLD_WIDTH     38
-#define WORLD_HEIGHT    20
-
-#define TURN_PERIOD    200
-#define TURN_MAX      1000
 
 
 void init();
@@ -31,6 +19,7 @@ void deinit();
 
 
 gol::World*    w;
+gol::Textarea* t;
 gol::Screenio* sio;
 gol::Keyio*    kio;
 gol::Renderer* rer;
@@ -65,29 +54,31 @@ int main()
 void init()
 {
     w   = new gol::World(WORLD_WIDTH, WORLD_HEIGHT);
+    t   = new gol::Textarea(w);
     sio = new gol::Screenio();
     kio = new gol::Keyio();
     rer = new gol::Renderer();
 
-    dur = std::chrono::milliseconds(TURN_PERIOD);
+    dur = std::chrono::milliseconds(gol::turnPeriod);
 
     w->setSampleMap();
 
     sio->initTty();
 
     rer->addRenderee(w);
+    rer->addRenderee(t);
 
     rer->renderInit();
+    rer->renderAll();
 
     return;
 }
 
 void setMap(const int turn)
 {
-    rer->renderAll();
-
     bool nextWait = true;
-    bool rerender = false;
+    bool reCount  = false;
+    bool reRender = false;
     bool goDeinit = false;
     char c;
     int x = 0, y = 0;
@@ -102,7 +93,7 @@ void setMap(const int turn)
             case 'W': case 'w':
                 if(y > 0){ANSIES(CUU(1)); y--;}
                 break;
-            
+
             case 'S': case 's':
                 if(y < WORLD_HEIGHT - 1){ANSIES(CUD(1)); y++;}
                 break;
@@ -117,12 +108,14 @@ void setMap(const int turn)
 
             case '[':
                 w->getCell(x, y)->setStatus(gol::CellStatus::DEAD, t);
-                rerender = true;
+                reCount = true;
+                reRender = true;
                 break;
 
             case ']':
                 w->getCell(x, y)->setStatus(gol::CellStatus::LIVE, t);
-                rerender = true;
+                reCount = true;
+                reRender = true;
                 break;
 
             case '\\':
@@ -139,12 +132,18 @@ void setMap(const int turn)
                 break;
         }
 
-        if(rerender)
+        if(reCount)
+        {
+            w->countAllCells(t);
+            reCount = false;
+        }
+
+        if(reRender)
         {
             ANSIES(CUH SCP);
             rer->renderAll();
-            rerender = false;
             ANSIES(RCP CUS);
+            reRender = false;
         }
     }
 

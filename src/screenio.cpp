@@ -25,6 +25,8 @@ namespace gol
         // cfmakeraw(&(tty[STDIN_FILENO]));
         setTty();
 
+        ANSIES(SWT("Game of Life"));
+
         ANSIES(CUH ED(2) CUP(1,1));
 
         return;

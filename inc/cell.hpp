@@ -11,6 +11,11 @@
 
 namespace gol
 {
+    // Forward Declarations
+    class Cell;
+    typedef std::vector<Cell*> WorldMapStreet;
+    typedef std::vector<WorldMapStreet> WorldMap;
+
     const int neighbors[8][2] =
         {{-1, -1}, {-1,  0}, {-1,  1},
          { 0, -1},           { 0,  1},
