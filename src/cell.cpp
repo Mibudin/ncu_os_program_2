@@ -40,8 +40,8 @@ namespace gol
         printf(CUP(%d, %d), y + 3, (x << 1) + 5 + 1);
         switch(status[turn & 1])
         {
-            case DEAD: printf(". "); break;
-            case LIVE: printf("O "); break;
+            case DEAD: printf(SGR_CLOR(49, 31) ". " SGR_DEFT); break;
+            case LIVE: printf(SGR_CLOR(49, 92) SGR_BDBR "O " SGR_DEFT); break;
         }
         fflush(nullptr);
 

@@ -45,8 +45,8 @@
 #define MSB CSI "?1049l"  // Use Main Screen Buffer
 
 // Select Graphic Rendition
-#define SGR_ATTR(n)    SGR(#n)         // Set attributes
-#define SGR_CLOR(b, f) SGR(#b ";" #f)  // Set colors of baclground and foreground
+#define SGR_ATTR(n)    SGR(n)    // Set attributes
+#define SGR_CLOR(b, f) SGR(b;f)  // Set colors of baclground and foreground
 
 // Select Graphic Rendition (Attributes)
 #define SGR_DEFT SGR_ATTR(0)   // Set to default
@@ -56,6 +56,18 @@
 #define SGR_NOUL SGR_ATTR(24)  // Set to be with no underline
 #define SGR_NEGA SGR_ATTR(7)   // Swaps foreground and background colors
 #define SGR_POSI SGR_ATTR(27)  // Returns foreground adn background to normal
+
+// Select Graphic Rendition (Colors)
+// Color   F_N, B_N, F_B, B_B
+// Black    30,  40,  90, 100
+// Red      31,  41,  91, 101
+// Green    32,  42,  92, 102
+// Yellow   33,  43,  93, 103
+// Blue     34,  44,  94, 104
+// Magenta  35,  45,  95, 105
+// Cyan     36,  46,  96, 106
+// White    37,  47,  97, 107
+// Default  39,  49, ---, ---
 
 // Designate Character Set
 #define DEC_VTHL "j"  // (0x6a) ┘
