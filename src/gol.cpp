@@ -5,7 +5,6 @@
 #include"cell.hpp"
 #include"world.hpp"
 #include"textarea.hpp"
-// #include"thread_pool.hpp"
 #include"screenio.hpp"
 #include"keyio.hpp"
 #include"renderer.hpp"
@@ -31,22 +30,16 @@ std::thread* thK;
 std::chrono::steady_clock::duration dur;
 std::chrono::steady_clock::time_point tp;
 
-// timer tmr;
-
 
 int main()
 {
     init();
 
     setMap(0);
-    
-    // tmr.start();
+
     loop();
-    // tmr.stop();
 
     deinit();
-
-    // printf("> %d\n", tmr.ms());
 
     return 0;
 }

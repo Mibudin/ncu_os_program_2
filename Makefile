@@ -77,4 +77,4 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 # Link the specified object file
 $(BIN_DIR)/$(EXECUTABLE): $(OBJS)
-	$(CC) $(C_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) $(LIBS) $^  -o $@
+	$(CC) $(C_FLAGS) -I$(INC_DIR) -L$(LIB_DIR) $(LIBS) $^ -o $@
